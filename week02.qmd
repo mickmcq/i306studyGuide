@@ -171,7 +171,7 @@ There are graphical and numerical methods for summarizing numerical data, includ
 We can draw a scatterplot of two variables of the `loan50` data as follows.
 
 ```{r,message=FALSE}
-options(repos=structure(c(CRAN="https://cran.microsoft.com/")))
+options(repos=structure(c(CRAN="https://mirrors.nics.utk.edu/cran/")))
 library(tidyverse)
 load(paste0(Sys.getenv("STATS_DATA_DIR"),"/loan50.rda"))
 loan50 |>
