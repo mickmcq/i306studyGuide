@@ -185,6 +185,28 @@ treemap(dfa,
 
 The palette in this case is selected from RColorbrewer. You can find the full set of RColorbrewer palettes at the R Graph Gallery.
 
+## A complete scatterplot
+
+The following scatterplot is completed in stages in section 2.2 of R4DS, which is available on Canvas as Wickham2023.pdf or online by googling *r4ds 2e*.
+
+```{r}
+library(palmerpenguins)
+library(ggthemes)
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point(aes(color = species, shape = species)) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Body mass and flipper length",
+    subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+    x = "Flipper length (mm)", y = "Body mass (g)",
+    color = "Species", shape = "Species"
+  ) +
+  scale_color_colorblind()
+```
+
 ## Foundations for Inference
 
 The following material comes from Mick McQuaid's study guide for a previous course. In that course, we used @Mendenhall2012 as a textbook, so there are innumerable references to that textbook in the following material. You don't actually need that textbook and I will eventually delete references to it from this file. I just don't have time right now.
@@ -781,6 +803,25 @@ distribution.
 %
 --->
 
+### conditions for the central limit to hold
+
+Let $p$ be the parameter of interest, in this case a proportion. (This not the same thing as a $p$-value, which we will explore later.) We don't know $p$ unless we examine every object in the population, which is usually impossible. For example, there are regulations in the USA requiring cardboard boxes used in interstate commerce to have a certain strength, which is measured by crushing the box. It would be economically unsound to crush all the boxes, so we crush a sample and obtain an estimate $\hat{p}$ of $p$. The estimate is pronounced p-hat.
+
+The central limit theorem can be framed in terms of its mean and standard error:
+
+$$
+\mu_{\hat{p}}=p \qquad \text{SE}_{\hat{p}} = \sqrt{\frac{p(1-p)}{n}}
+$$
+
+The conditions under which this holds true are
+
+1. The sample observations are independent of each other
+2. The sample is sufficiently large that the success-failure condition holds, namely $np\geqslant10$ and $n(1-p)\geqslant10$.
+
+The sample observations are independent if they are drawn from a random sample. Sometimes you have to use your best judgment to determine whether the sample is truly random. For example, friends are known to influence each other's opinions about pop music, so a sample of their opinions of a given pop star may not be random. On the other hand, their opinions of a previously unheard song from a previously unheard artist may have a better chance of being random.
+
+These conditions matter when conducting activities like constructing a confidence interval or modeling a point estimate.
+
 ### normal distribution example problem
 
 Consider an example for calculating a
@@ -1302,6 +1343,31 @@ need to do so by the preceding process of finding a way
 to make $\sum y_i^2 = n(\overline{y}^2)$ and then trying
 to alter the values to decrease the left side or
 increase the right side.
+
+## Type I and Type II error
+
+Table 4.6 from @James2021 shows the possible results of classification.
+
++-------------------------------+---------------------------------------------------+
+|                               | *True class*                                      |
+|                               +---------------------+---------------------+-------+
+|                               | $-$ or Null         | $+$ or Non-null     | Total |
++=============+=================+=====================+=====================+=======+
+| *Predicted* | $-$ or Null     | True Negative (TN)  | False Negative (FN) | N$*$  |
+| *class*     +-----------------+---------------------+---------------------+-------+
+|             | $+$ or Non-null | False Positive (FP) | True Positive (TP)  | P$*$  |
+|             +-----------------+---------------------+---------------------+-------+
+|             | Total           | N                   | P                   |       |
++-------------+-----------------+---------------------+---------------------+-------+
+
+Table 4.7 from @James2021 gives some synonyms for important measures of correctness and error in various disciplines.
+
+name                      definition synonyms
+------------------------- ---------- -----------------------------------------------
+False Positive rate       FP/N       Type I error, 1 $-$ Specificity
+True Positive rate        TP/P       1 $-$ Type II error, power, sensitivity, recall
+Positive Predictive value TP/P$*$    Precision, 1 $-$ false discovery proportion
+Negative Predictive value TN/N$*$
 
 ## Make an inference about a population parameter.
 

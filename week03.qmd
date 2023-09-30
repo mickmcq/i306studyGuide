@@ -10,15 +10,11 @@ knitr::opts_chunk$set(
 
 ## Recap Week 02
 
-We did some exercises, for which there are now solutions in the file `week02.qmd` and `week02.html`. You should examine and compare these two files, especially the exercise parts.
-
-I deleted the `week02a.qmd` and `week02a.html` files and you should too. The `week02.qmd` file and the `week02.html` file contain both corrections and additions, so only refer to those.
+We did some exercises, for which there are now solutions in the file `week02exercises-soln.qmd` and `week02exercises-soln.html`. You should examine and compare these two files, especially the exercise parts.
 
 ## Week 03: More on R and Quarto
 
-I've established groups for the milestones. I'm open to moving you around if needed, subject to the constraint that we have no more than five members in a group. Currently we have six groups of five so, if you want to switch groups, you need to find someone in the other group who wants to switch to your group.
-
-I've added a bunch of files to the Files section on Canvas, pertaining to Milestone 1. You need to download these files. One of them (`vehicles.csv`) is quite large and time-consuming to download, so don't wait.
+We will establish groups for the milestones. I'm open to moving you around if needed, subject to the constraint that we have no more than five members in a group. I expect to have four groups of four and two groups of five.
 
 ### The template files
 
@@ -40,8 +36,8 @@ Another point about the above result is that the `count()` function behaves diff
 df |> count(region,sort=TRUE) |> print(n=404)
 ```
 
-The number 404 is because there are 404 elements in the
-list.
+The number 404 is because there are 404 unique elements in the
+list, which you can find out by looking at the output of the `count()` function.
 
 Another solution (more cumbersome) follows.
 
@@ -53,7 +49,7 @@ df %>%
   print(n=40)
 ```
 
-Another way to investigate categorical data is through contingency tables. You have already made some of these using the `table()` function and some associated functions that are mentioned in the `week02.qmd` file. It will take some intuition to figure out which pairs of categorical columns should be tabulated for Milestone 1.
+Another way to investigate categorical data is through contingency tables. You have already made some of these using the `table()` function and some associated functions that are mentioned in the `week02exercises-soln.qmd` file. It will take some intuition to figure out which pairs of categorical columns should be tabulated for Milestone 1.
 
 ### Numerical Data
 
@@ -78,16 +74,24 @@ df %>%
 df$price <- as.integer(df$price)
 ```
 
-You'll notice that one of the prices is 3.7 billion dollars for a Toyota truck! This is obviously a misprint! You should probably remove this row from the data frame and save the data frame without it. A more sophisticated alternative would be to impute a value for this truck. There are many advanced statistical ways to do this, but they are beyond the scope of this course. @vanBuuren2018 describes several excellent ways to do so, particularly in that book's Section 5.1.1, Recommended Workflows. It is usually a mistake to use an average for missing (NA) values because to do so compresses the variance unnaturally. You may remove that particular row by saying `df <- df[-(which.max(df$price)),]`. Unfortunately, you will find that not to be very useful because there are several prices of over a billion dollars for generic cars! In fact, there are several with prices listed as `1234567890` and some listed at `987654321`. Many other ridiculous patterns can be found for price. So what can you do? Personally, I would add the following line right after reading in the file:
+You'll notice that one of the prices is 3.7 billion dollars for a Toyota truck! This is obviously a misprint! You should probably remove this row from the data frame and save the data frame without it. A more sophisticated alternative would be to impute a value for this truck. There are many advanced statistical ways to do this, but they are beyond the scope of this course. @vanBuuren2018 describes several excellent ways to do so, particularly in that book's Section 5.1.1, Recommended Workflows. It is usually a mistake to use an average for missing (NA) values because to do so compresses the variance unnaturally. You may remove that particular row by saying `df <- df[-(which.max(df$price)),]`. Unfortunately, you will find that not to be very useful because there are several prices of over a billion dollars for generic cars! In fact, there are several with prices listed as `1234567890` and some listed at `987654321`. Many other ridiculous patterns can be found for price. So what can you do? Personally, I might add the following line right after reading in the file:
 
 ```{r}
 #| eval: FALSE
 df <- df[df$price<100000&df$price>0,]
 ```
 
-This will rid the data frame of cars priced at greater than 100,000 dollars and still leave you with over 300,000 automobiles to analyze. Of course, there are will still be spurious entries, but at least it's a start. The above code will also get rid of cars priced at exactly zero dollars. Examination of the data frame will show that many of the zero dollar entries are just ads for used car dealers. The expression `price<100000&price>0` is called a compound Boolean expression. It is compound because of the ampersand, which stands for the word *and*. It means that the row has to contain a price less than 100,000 AND it also has to be a price greater than zero.
+or, better yet,
 
-By the way, this is a good reminder that a data frame has a row and a column index. You can refer to rows by saying `df[`*expression*`,]` and to columns by saying `df[,`*expression*`]`. The *expression* can be any mathematical expression that resolves to TRUE or FALSE. The above expression resolves to TRUE for cars priced at greater than zero but less than 100,000 dollars, and FALSE for cars priced at any integer greater than or equal to 100,000. You can tell that `price` is a 64 bit integer by saying `str(df)` which will tell the structure of the `df` data frame. You should be able to see that most of the columns are classified as `chr` or character. This is not desirable. Most of the columns clasified as `chr` should more properly be classified as factors. Factors take up less space on your computer, are faster to process, and allow more types of processing than `chr`. Unfortunately, if you store your intermediate work as a `.csv` file, you will lose the factor designation. Therefore, I recommend that you do the following.
+```{r}
+df <- df[df$price < quantile(df$price,.9,na.rm=TRUE) & df$price > quantile(df$price,.1,na.rm=TRUE),]
+```
+
+The first one will rid the data frame of cars priced at greater than 100,000 dollars and still leave you with over 300,000 automobiles to analyze. Of course, there are will still be spurious entries, but at least it's a start. The first code will also get rid of cars priced at exactly zero dollars. Examination of the data frame will show that many of the zero dollar entries are just ads for used car dealers. The expression `price<100000&price>0` is called a compound Boolean expression. It is compound because of the ampersand, which stands for the word *and*. It means that the row has to contain a price less than 100,000 AND it also has to be a price greater than zero.
+
+The second code gets rid of the 90th percentile and above and the 10th percentile and below, which will still leave plenty.
+
+By the way, this is a good reminder that a data frame has a row and a column index. You can refer to rows by saying `df[`*expression*`,]` and to columns by saying `df[,`*expression*`]`. The *expression* can be any mathematical expression that resolves to TRUE or FALSE. The first above expression resolves to TRUE for cars priced at greater than zero but less than 100,000 dollars, and FALSE for cars priced at any integer greater than or equal to 100,000. You can tell that `price` is a 64 bit integer by saying `str(df)` which will tell the structure of the `df` data frame. You should be able to see that most of the columns are classified as `chr` or character. This is not desirable. Most of the columns clasified as `chr` should more properly be classified as factors. Factors take up less space on your computer, are faster to process, and allow more types of processing than `chr`. Unfortunately, if you store your intermediate work as a `.csv` file, you will lose the factor designation. Therefore, I recommend that you do the following.
 
 Step 1. Get rid of rows you don't want, such as those with prices over or under some threshold value you choose.
 
@@ -131,6 +135,94 @@ The number 43 is because there are 43 manufacturers in
 the data frame. Note that, using the `reframe()`
 function, I could add a few more comma-separated statistics to the
 output.
+
+### Investigating words
+
+To make a word cloud, I first exported the `model` column from the data frame to a file called `bla`, using the `write_csv()` function. Next I used Vim to convert all spaces to newlines, so that the file would have one word on each line. To do so I said `:%s/ /\r/g` in Vim.
+
+Next I said `sort bla | uniq -c | sort -n >blabla` to get the following output. This is just the last few lines of the file. Note that the most frequently occuring word in the file is 1500, which occurs 24,014 times.
+
+```
+3383    fusion
+3475    tundra
+3479    xl
+3528    corolla
+3585    unlimited
+3985    altima
+3985    explorer
+4072    3500
+4105    f-250
+4256    mustang
+4277    escape
+5162    camry
+5208    series
+5244    pickup
+5277    NA
+5479    accord
+5585    xlt
+5659    awd
+5660    cherokee
+5667    f150
+5680    tacoma
+5734    civic
+5744    s
+5865    2d
+6185    limited
+6213    lt
+6295    coupe
+6519    crew
+6869    premium
+7190    duty
+7319    se
+7531    2500
+7564    utility
+8093    wrangler
+8327    super
+8642    sierra
+8733    grand
+9578    4x4
+10283   f-150
+14877   sedan
+15152   cab
+17181   silverado
+17488   4d
+23130   sport
+24014   1500
+```
+
+Next I opened the `blabla` file in Vim and converted all sequences of spaces to a tab character, saying `:%s/^  *//` to get rid of leading spaces, then `:%s/  */\t/` to convert the intercolumn spaces to tabs. I saved this file as `wordfreq.tsv` and opened it in R, using the following code to convert it to a word cloud.
+
+```{r}
+library(tidyverse)
+df<-read_tsv("wordfreq.tsv")
+df<-df|>relocate(freq,.after=word)
+head(df)
+library(wordcloud2)
+wordcloud2(df)
+```
+
+I was not able to reproduce the error message I kept getting in class. This simply worked the first time through after class. I also can not explain why several of the most frequently occurring words do not appear in the word cloud. I suspect it is because the word cloud is truncated in this display. When I have constructed this word cloud previously, it was ellipse-shaped and zoomed out. I have forgotten whatever I did to make that happen!
+
+### Filtering two specific trucks
+
+Two of the most common words I found above were *f-150* and *silverado*. Since these are two popular truck models, I thought to compare them by making a data frame for each. To do so I used the `filter()` function of the `dplyr` package. This is described in great detail in Chapter 4 of @Wickham2023. The special construction `(?i)` makes whatever follows case-insensitive. Thus, in this case, it picks up Silverado and SILVERADO, as well as silverado. It would also pick up sIlVeRaDo if such a strange mixed case version presented itself. This is called a regular expression or regex and is commonly used in finding and replacing text patterns.
+
+The regexes for f-150 are much more complicated. First, I used the alternating selector `[Ff]`. This stands for either a capital F or small f but not both. I can put any number of characters in the brackets and this will select any of them occurring one time. Next, I used the *zero-or one character selector*, which consists of a dot followed by a question mark. That selector attaches itself to whatever precedes it, in this case `[Ff]`. So the whole construct `[Ff].?` can be read as "exactly one F or f followed by exactly one character." Next comes a literal 150, so the only time that an F or f plus at most one character will be matched is if it is immediately followed by `150`. The last construct in this regular expression is the negating alternator, `[^]` with a zero in it. The negating alternator matches anything *except* the characters following the `^` in brackets. In this case it means that any character except a zero is okay. It's actually a vestige of an earlier attempt. I had previously written the expression as `[Ff].*150` and run it and it erroneously picked up a model string that said "pacifica \$1500". That was because I used a `*` instead of a `?`. The `*` symbol means *zero or more characters*. As a result, the words "pacifica \$1500" matched because there is an f followed by some characters, followed by 150! So I stuck the negating alternator `[^0]` in to get rid of the 15000 before I realized that the real problem was the `*`. I report this so you can see that it is a potentially long iterative process to find the right regex. This regex picks up f150, F 150, f-150, and so on. I could have refined it further. Can you see how?
+
+```{r}
+#| label: filteringTrucks
+library(tidyverse)
+#df <- read_csv(paste0(Sys.getenv("STATS_DATA_DIR"),"/vehicles.csv"))
+#load("/home/mm223266/data/vehicles.Rdata")
+#df <- read_csv("/home/mm223266/data/vehicles.csv")
+load(paste0(Sys.getenv("STATS_DATA_DIR"),"/vehicles.Rdata"))
+#names(df)
+df2 <- df |> filter(str_detect(df$model,regex("(?i)silverado")))
+head(table(df2$model),12)
+print("::::::::::::::::::::::::::::::::::")
+df3 <- df |> filter(str_detect(df$model,regex("[Ff].?150[^0]")))
+head(table(df3$model),12)
+```
 
 ### A function between numeric and visual
 

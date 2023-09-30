@@ -10,9 +10,9 @@ knitr::opts_chunk$set(
 
 ## Recap Week 03
 
-We did some exercises, for which there are now solutions in the file `week03exercises.qmd` and `week03exercises.html`. You should examine and compare these two files.
+We did some exercises, for which there are now solutions in the file `week03exercises-soln.qmd` and `week03exercises-soln.html`. You should examine and compare these two files.
 
-For each student, we calculated the number of exercises successfully completed. Following is a stem and leaf diagram, as well as summary statistics.
+Last semester, for each student, we calculated the number of exercises successfully completed. Following is a stem and leaf diagram, as well as summary statistics.
 
 ```{r}
 x<-scan("week03exercisesList.txt")
@@ -30,7 +30,12 @@ hist(x)
 stem(x,scale=2)
 ```
 
-We also talked about milestone 1, for which there are some hints in `week03.qmd`.
+We also talked about milestone 1, for which there are some hints in the previous chapter.
+
+### Name value pairs
+It came to my attention that not everyone knows what a name value pair is or how to read it. The name is always on the left and the value is always on the right. Usually there is an equal sign in between, but it doesn't mean *equals*. Instead it means *gets*. So, for example, in ggplot, there are *aesthetics* `x` and `y`. You can say something like `x=bill_depth_mm` and `y=bill_length_mm`. You would read the first one as "x gets bill depth in millimeters". It would make no sense to say the reverse. Don't ever say `bill_depth_mm=x`. Instead, let `x` and `y` be the names that ggplot knows about, the x-axis and the y-axis, and `bill_depth_mm` and `bill_length_mm` be the values that we plug into `x` and `y`.
+
+Similarly, I found out that not everyone knows what we mean by *local* and *remote*. The local machine is your laptop. It is the machine close to you. The remote machine is the machine that hosts RStudio Server, the machine you connect to when you access the URL for RStudio. When you work in RStudio on the RStudio server, your work gets saved to the remote machine. Then you have to download it to your local machine and upload it to the machine that hosts Canvas. There is no direct path between the two remote machines that host RStudio Server and Canvas.
 
 ## Bayesian approach
 There are two competing schools of thought about what probability is. The bayesian approach is that probability is quantified belief or reasonable expectation of the outcomes of events based on a state of knowledge. This approach is recently taught in graduate schools. We will not extensively study this approach, but I want you to know that it exists and is rising in academic popularity.
@@ -85,6 +90,49 @@ P (A\text{ or }B) = P (A) + P (B) − P (A\text{ and }B)
 $$
 
 where $P (A\text{ and }B)$ is the probability that both events occur.
+
+## Counting Permutations and Combinations
+Permutations can be thought of as lineups. For instance, suppose you have five people to put in a line. There are five people to choose from to be first in line, then four people remain to be second in line, and so on. You can count this up as $5 \times 4 \times 3 \times 2 \times 1 = 5!$ or five factorial. This holds true for as many objects as you wish to line up.
+
+Combinations can be thought of as committees. There is no order as in a lineup. You're either a member or you're not. Suppose you want to form a committee of five people from among twenty people. It doesn't matter what order they come in so you can't use the factorial method to count them. There is another method, which you can find described in detail in @Ash1993. The main result is that, to choose a committee of 5 from among 20 people, use
+
+$$
+\binom{20}{5} = \frac{20!}{5!(20-5)!}
+$$
+
+This is read as *twenty choose 5*.
+
+Keep in mind that
+
+$$
+\binom{n}{r}=\binom{n}{n-r}
+$$
+
+and
+
+$$
+\binom{n}{1}=n
+$$
+
+and
+
+$$
+\binom{n}{n}={n}{0}=1
+$$
+
+This last result is because $0!=1$ by definition.
+
+@Ash1993 gives the examples of finding and not finding the Queen of Spades ($Q_s$) in a poker hand. You can think of a poker hand as a committee of 5 cards drawn from 52, so the total number of poker hands is given by $\binom{52}{5}$. Finding hands containing the $Q_s$ amounts to choosing a committee of size four (the remainder of the hand, from among 51 cards (the remainder of the deck. So there are $\binom{51}{4}$ such hands.
+
+$$
+P(Q_s)=\dfrac{\binom{51}{4}}{\binom{52}{5}}=\frac{5}{52}
+$$
+
+Keep in mind when canceling in stacked fractions that
+
+$$
+\dfrac{\frac{a}{b}}{\frac{c}{d}}=\dfrac{a \cdot d}{b \cdot c}
+$$
 
 ## Probability distributions
 A probability distribution is a list of the possible
@@ -351,7 +399,7 @@ $$
 The Greek letter $\sum$ (Sigma) denotes a sum of a series of numbers, indexed in this case by $i$. You can read it in English as the sum, going from $1$ to $k$, of the expressions to the right of the Sigma sign. In other words,
 
 $$
-x_1P(X=x_1)+x_1P(X=x_1)+\cdots+x_kP(X=x_k)
+x_1P(X=x_1)+x_2P(X=x_2)+\cdots+x_kP(X=x_k)
 $$
 
 It's the average as we usually understand it if each outcome is equally probable, in which case it's the sum of the outcomes divided by the number of outcomes.

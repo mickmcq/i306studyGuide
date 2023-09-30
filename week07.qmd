@@ -110,7 +110,7 @@ The difference $\hat{p}_1-\hat{p}_2$ can be modeled using the normal distributio
 
 ### Confidence intervals for $p_1-p_2$
 
-$$ \text{point estimate } \pm z^* \times \text{SE} \rightarrow \hat{p}_1 - \hat{p}_2 \times \sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}} $$
+$$ \text{point estimate } \pm z^* \times \text{SE} \rightarrow (\hat{p}_1 - \hat{p}_2) \pm z^* \times \sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}} $$
 
 ### Hypothesis testing for $p_1-p_2$
 
@@ -145,7 +145,7 @@ The $\chi^2$ distribution is sometimes used to characterize data sets and statis
 are always positive and typically right skewed. Recall a normal distribution had two parameters –
 mean and standard deviation – that could be used to describe its exact characteristics. The $\chi^2$
 distribution has just one parameter called degrees of freedom (df), which influences the
-shape, center, and spread of the distribution. Here is a picture of the $\chi^2$ distribution for several values of df.
+shape, center, and spread of the distribution. Here is a picture of the $\chi^2$ distribution for several values of df (1--8).
 
 ```{r}
 #| engine = 'tikz',
@@ -159,6 +159,7 @@ shape, center, and spread of the distribution. Here is a picture of the $\chi^2$
           plot (\x,{exp(ln(\x/2)*\k/2-ln(\x)-\x/2-ln(\g))});
   \end{tikzpicture}
 ```
+<!-- note that \g are values of the gamma function for df=1:8 -->
 
 In the jurors example, we can calculate the appropriate $p$-value in R by using the $\chi^2$ statistic calculated from the sample, 5.89, and the parameter $k-1$ which is the number of groups minus one, using R:
 
